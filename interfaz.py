@@ -31,8 +31,8 @@ def pagina_principal():
                 cerrar_sesion()
 
     # Cargar imágenes
-    logo_dev = Image.open("D:/DESARROLLO PROGRAMACION/STREAMLIT_PROJECTS/sistema_turnos/logo_alain.png")
-    logo_app = Image.open("D:/DESARROLLO PROGRAMACION/STREAMLIT_PROJECTS/sistema_turnos/logo app farmacia.png")
+    logo_dev = Image.open("logo_alain.png")
+    logo_app = Image.open("logo app farmacia.png")
 
     # Mostrar logo del desarrollador en el sidebar
     with st.sidebar:
