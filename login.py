@@ -40,7 +40,7 @@ def pagina_login():
     st.markdown(f"""
         <div style='text-align: center; margin-top: 30px;'>
             <img src='data:image/png;base64,{img_base64_app}' style='max-width: 150px; height: auto;' />
-            <h2 style='color: #006699;'>Sistema de gestión de Turnos CESFAM</h2>
+            <h2 style='color: #006699;'>Sistema de gestión de Farmacia</h2>
         </div>
         <hr>
     """, unsafe_allow_html=True)
@@ -97,4 +97,3 @@ if __name__ == "__main__":
         interfaz.pagina_principal()  # ✅ Esto te lleva a interfaz.py si está importado como main
     else:
         pagina_login()
-
