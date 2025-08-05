@@ -3,4 +3,4 @@ from servidor_fb import *
 
 st.title("Agenda de turnos")
 
-st.text(leer_registro("login"))
+st.text("esto fue una prueba")
