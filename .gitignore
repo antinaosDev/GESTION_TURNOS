@@ -10,10 +10,6 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Ignorar archivos temporales y de sistema
-*.log
-.DS_Store
-Thumbs.db
 
 # Ignorar credenciales Firebase y archivos sensibles
 turnos-gest-firebase-adminsdk-fbsvc-86ffe31612.json
