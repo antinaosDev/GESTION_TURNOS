@@ -1,0 +1,15 @@
+# Ignorar carpetas de entorno virtual
+venv/
+Lib/
+Scripts/
+__pycache__/
+
+# Ignorar archivos compilados de Python
+*.pyc
+*.pyo
+
+# Ignorar archivos temporales
+*.log
+
+#Ignorar todos los archivos json
+*.json
