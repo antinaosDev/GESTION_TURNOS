@@ -11,8 +11,8 @@ import variables
 st.set_page_config(page_title="Login Sistema de Turnos Farmacia", layout="centered", page_icon="🔒")
 
 # --- Cargar imágenes ---
-logo_app = Image.open("D:/DESARROLLO PROGRAMACION/STREAMLIT_PROJECTS/sistema_turnos/logo app farmacia.png")
-logo_personal = Image.open("D:/DESARROLLO PROGRAMACION/STREAMLIT_PROJECTS/sistema_turnos/logo_alain.png")
+logo_app = Image.open("logo_alain.png")
+logo_personal = Image.open("logo app farmacia.png")
 
 # --- Codificar logo_app para cabecera ---
 buffered = BytesIO()
@@ -97,3 +97,4 @@ if __name__ == "__main__":
         interfaz.pagina_principal()  # ✅ Esto te lleva a interfaz.py si está importado como main
     else:
         pagina_login()
+
