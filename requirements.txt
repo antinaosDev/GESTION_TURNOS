@@ -2,3 +2,6 @@ streamlit
 firebase-admin
 pandas
 fpdf
+xlsxwriter
+plotly
+Pillow
