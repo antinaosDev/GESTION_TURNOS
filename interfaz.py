@@ -146,15 +146,12 @@ if menu == "📋 Solicitar Turno":
 
 # ---- VER TURNOS (ADMIN) ----
 elif menu == "🗞️ Ver Turnos (Admin)":
-    st.header("📄 Lista de Turnos Asignados")
     turnos_dict = leer_registro("turnos")
     turnos = pd.DataFrame.from_dict(turnos_dict, orient='index') if turnos_dict else pd.DataFrame()
 
     if turnos.empty:
         st.info("No hay turnos asignados aún.")
     else:
-        st.dataframe(turnos.sort_values(by=["Fecha", "Nro Turno"], ascending=[False, True]), use_container_width=True)
-
         st.subheader("✔️ Marcar turno como atendido")
 
         pendientes = turnos[(turnos["Estado"] == "Pendiente") & (turnos["Nro Turno"].notna())]
@@ -165,9 +162,12 @@ elif menu == "🗞️ Ver Turnos (Admin)":
                     if t["Nro Turno"] == turno_a_marcar:
                         actualizar_registro("turnos", {"Estado": "Atendido"}, id_turno)
                         st.success(f"Turno {turno_a_marcar} marcado como atendido.")
-                        st.experimental_rerun()
+                        st.rerun()
         else:
             st.info("No hay turnos pendientes para marcar como atendidos.")
+
+        st.subheader("📄 Lista de Turnos Asignados")
+        st.dataframe(turnos.sort_values(by=["Fecha", "Nro Turno"], ascending=[False, True]), use_container_width=True)
 
         st.subheader("📝 Editar o eliminar turnos")
 
@@ -185,43 +185,73 @@ elif menu == "🗞️ Ver Turnos (Admin)":
                     break
 
             if turno_data:
-                with st.form("form_editar_turno"):
-                    nuevo_nombre = st.text_input("Nombre", turno_data.get("NOMBRE", ""))
-                    nuevo_rut = st.text_input("RUT", turno_data.get("RUT", ""))
-                    nueva_categoria = st.selectbox("Categoría", list(CATEGORIAS.values()), index=list(CATEGORIAS.values()).index(turno_data.get("CATEGORIA", "G")))
-                    nueva_subcat = st.selectbox("Subcategoría", list(SUBCATEGORIAS.values()), index=list(SUBCATEGORIAS.values()).index(turno_data.get("SUBCAT", "M")))
-                    nuevo_estado = st.selectbox("Estado", ["Pendiente", "Atendido"], index=0 if turno_data.get("Estado") == "Pendiente" else 1)
-                    nueva_fecha = st.date_input("Fecha", datetime.strptime(turno_data.get("Fecha"), "%Y-%m-%d").date())
+                with st.expander(f"✏️ Editar turno {nro_seleccionado}", expanded=False):
+                    with st.form("form_editar_turno"):
+                        nuevo_nombre = st.text_input("Nombre", turno_data.get("NOMBRE", ""))
+                        nuevo_rut = st.text_input("RUT", turno_data.get("RUT", ""))
+                        nueva_categoria = st.selectbox(
+                            "Categoría", 
+                            list(CATEGORIAS.values()), 
+                            index=list(CATEGORIAS.values()).index(turno_data.get("CATEGORIA", "G"))
+                        )
+                        nueva_subcat = st.selectbox(
+                            "Subcategoría", 
+                            list(SUBCATEGORIAS.values()), 
+                            index=list(SUBCATEGORIAS.values()).index(turno_data.get("SUBCAT", "M"))
+                        )
+                        nuevo_estado = st.selectbox(
+                            "Estado", 
+                            ["Pendiente", "Atendido"], 
+                            index=0 if turno_data.get("Estado") == "Pendiente" else 1
+                        )
+                        nueva_fecha = st.date_input(
+                            "Fecha", 
+                            datetime.strptime(turno_data.get("Fecha"), "%Y-%m-%d").date()
+                        )
 
-                    editar = st.form_submit_button("💾 Guardar cambios")
-                    eliminar = st.form_submit_button("🗑️ Eliminar turno")
+                        editar = st.form_submit_button("💾 Guardar cambios")
+                        eliminar = st.form_submit_button("🗑️ Eliminar turno")
 
-                if editar:
-                    actualizar_registro("turnos", {
-                        "NOMBRE": nuevo_nombre,
-                        "RUT": nuevo_rut,
-                        "CATEGORIA": nueva_categoria,
-                        "SUBCAT": nueva_subcat,
-                        "Estado": nuevo_estado,
-                        "Fecha": str(nueva_fecha)
-                    }, id_encontrado)
-                    st.success("✅ Turno actualizado correctamente.")
-                    st.experimental_rerun()
+                    if editar:
+                        actualizar_registro("turnos", {
+                            "NOMBRE": nuevo_nombre,
+                            "RUT": nuevo_rut,
+                            "CATEGORIA": nueva_categoria,
+                            "SUBCAT": nueva_subcat,
+                            "Estado": nuevo_estado,
+                            "Fecha": str(nueva_fecha)
+                        }, id_encontrado)
+                        st.success("✅ Turno actualizado correctamente.")
+                        st.rerun()
 
-                if eliminar:
-                    from servidor_fb import borrar_registro
-                    borrar_registro("turnos", id_encontrado)
-                    st.warning(f"🗑️ Turno {nro_seleccionado} eliminado.")
-                    st.experimental_rerun()
+                    if eliminar:
+                        from servidor_fb import borrar_registro
+                        borrar_registro("turnos", id_encontrado)
+                        st.warning(f"🗑️ Turno {nro_seleccionado} eliminado.")
+                        st.rerun()
+
 
 
 # ---- PANTALLA DE TURNOS ----
 elif menu == "📽️ Pantalla de Turnos":
-    st.markdown("<h2>🎫 Turnos Pendientes</h2>", unsafe_allow_html=True)
+    st.markdown("<h2> </h2>", unsafe_allow_html=True)
     turnos_dict = leer_registro("turnos")
+
+    if turnos_dict:
+        # Filtrar registros que contengan las claves necesarias para evitar KeyErrors
+        turnos_dict = {k: v for k, v in turnos_dict.items() if
+                       "Estado" in v and "Fecha" in v and "CATEGORIA" in v and "SUBCAT" in v}
+    else:
+        turnos_dict = {}
+
     turnos = pd.DataFrame.from_dict(turnos_dict, orient='index') if turnos_dict else pd.DataFrame()
+
     hoy = str(datetime.now().date())
-    pendientes = turnos[(turnos["Estado"] == "Pendiente") & (turnos["Fecha"] == hoy)]
+
+    if all(col in turnos.columns for col in ["Estado", "Fecha", "CATEGORIA", "SUBCAT"]):
+        pendientes = turnos[(turnos["Estado"] == "Pendiente") & (turnos["Fecha"] == hoy)]
+    else:
+        pendientes = pd.DataFrame()  # DataFrame vacío si no existen las columnas
 
     col_general, col_preferencial = st.columns([1, 1])
 
@@ -234,7 +264,10 @@ elif menu == "📽️ Pantalla de Turnos":
             for i, subcat in enumerate(subcats):
                 with cols_sub[i]:
                     st.markdown(f"<div class='subcategoria-title'>{CODIGO_A_NOMBRE[subcat]}</div>", unsafe_allow_html=True)
-                    sub_turnos = pendientes[(pendientes["CATEGORIA"] == cat_sigla) & (pendientes["SUBCAT"] == subcat)]
+                    if not pendientes.empty:
+                        sub_turnos = pendientes[(pendientes["CATEGORIA"] == cat_sigla) & (pendientes["SUBCAT"] == subcat)]
+                    else:
+                        sub_turnos = pd.DataFrame()
                     if sub_turnos.empty:
                         st.markdown(f"<div class='turno-box'>Sin turnos</div>", unsafe_allow_html=True)
                     else:
