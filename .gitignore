@@ -1,5 +1,7 @@
 # Ignorar carpetas de entorno virtual
 venv/
+env/
+.env/
 Lib/
 Scripts/
 __pycache__/
@@ -8,11 +10,11 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Ignorar archivos temporales
+# Ignorar archivos temporales y de sistema
 *.log
+.DS_Store
+Thumbs.db
 
-#Ignorar todos los archivos json
-*.json
-
-#Ignorar toml
+# Ignorar credenciales Firebase y archivos sensibles
+turnos-gest-firebase-adminsdk-fbsvc-86ffe31612.json
 .streamlit/secrets.toml
