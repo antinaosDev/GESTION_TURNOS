@@ -18,7 +18,8 @@ firebase_config = {
 
 #Inicializacion
 cred = credentials.Certificate(firebase_config)
-firebase_admin.initialize_app(cred, {'databaseURL':st.secrets['firebase']['url_db']})
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred, {'databaseURL': st.secrets['firebase']['url_db']})
 
 #--------------ACCIONES_DB------------------------
 def ingresar_registro_bd(nom_tabla,datos):
